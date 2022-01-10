@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
-namespace PhoneShop.Data.Interfaces
+namespace PhoneShop.Business.Interfaces
 {
 
     public interface IRepository<T> where T : class

@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhoneShop.Data", "PhoneShop
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhoneShop.Business", "PhoneShop.Business\PhoneShop.Business.csproj", "{51CF46DF-AB86-4487-A828-E5EBFB4DE355}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Phoneshop.Test", "Phoneshop.Test\Phoneshop.Test.csproj", "{046CD499-D8AC-4AC0-943B-FF548EB35329}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Phoneshop.Test", "Phoneshop.Test\Phoneshop.Test.csproj", "{046CD499-D8AC-4AC0-943B-FF548EB35329}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,11 +1,11 @@
-﻿using PhoneShop.Data.Interfaces;
+﻿using PhoneShop.Business.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 
 namespace PhoneShop.Business.Repositories
 {
-    internal class EFRepository<T> : Data.Interfaces.IRepository<T> where T : class
+    internal class EFRepository<T> : IRepository<T> where T : class
     {
         public Func<SqlDataReader, T> Mapper { set => throw new NotImplementedException(); }
 

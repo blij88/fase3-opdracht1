@@ -1,4 +1,5 @@
-﻿using PhoneShop.Data.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using PhoneShop.Business.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,15 +10,14 @@ namespace PhoneShop.Business.Repositories
 
     public class AdoRepository<T> : IRepository<T> where T : class
     {
-        private const string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=PhoneshopPhase3week1;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
         private SqlConnection _connection;
 
         public Func<SqlDataReader, T> Mapper { private get; set; }
 
-        public AdoRepository()
+        public AdoRepository(IConfiguration configuration)
         {
-            _connection = new SqlConnection(connectionString);
+            _connection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
         }
 
         public void Status(bool IsError, string strErrMsg) { }

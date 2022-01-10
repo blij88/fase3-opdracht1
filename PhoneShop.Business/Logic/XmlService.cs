@@ -1,4 +1,5 @@
-﻿using PhoneShop.Data.Entities;
+﻿using PhoneShop.Business.Interfaces;
+using PhoneShop.Data.Entities;
 using PhoneShop.Data.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,11 @@ namespace PhoneShop.Business.Logic
         public XmlService(IBrandService brandService)
         {
             this.brandService = brandService;
+        }
+
+        public string GetConnectionString(string location)
+        {
+            return File.ReadAllText(location);
         }
 
         public List<Phone> Read(TextReader xml)
@@ -70,5 +76,7 @@ namespace PhoneShop.Business.Logic
 
             return result;
         }
+
+
     }
 }
