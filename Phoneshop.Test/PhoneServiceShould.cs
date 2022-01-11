@@ -82,7 +82,8 @@ namespace Phoneshop.Test
             localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
 
 
-            Assert.ThrowsAny<System.Exception>(() => phoneService.Create(new Phone()));
+            Assert.ThrowsAny<System.Exception>(() =>
+            phoneService.Create(new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 }));
         }
         [Fact]
         public void CreateANewPhone()
