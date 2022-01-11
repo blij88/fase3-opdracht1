@@ -1,13 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Windows.Forms;
-using PhoneShop.Data.Interfaces;
+using Microsoft.Extensions.Hosting;
+using PhoneShop.Business.Interfaces;
 using PhoneShop.Business.Logic;
 using PhoneShop.Business.Repositories;
-using PhoneShop.Business.Interfaces;
-using Microsoft.Extensions.Hosting;
-using PhoneShop.Data.Entities;
-using Microsoft.Extensions.Configuration;
+using PhoneShop.Data.Interfaces;
+using System;
+using System.Windows.Forms;
 
 namespace Phoneshop.WinForms
 {
@@ -25,21 +23,21 @@ namespace Phoneshop.WinForms
             Application.SetCompatibleTextRenderingDefault(false);
 
 
-           
-                Application.Run(builder.Services.GetRequiredService<PhoneOverview>());
+
+            Application.Run(builder.Services.GetRequiredService<PhoneOverview>());
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-            services.AddScoped<IPhoneService, PhoneService>();
-            services.AddScoped<IBrandService, BrandService>();
-            services.AddScoped(typeof(IRepository<>), typeof(AdoRepository<>));
-            services.AddScoped<IXmlService, XmlService>();
+                services.AddScoped<IPhoneService, PhoneService>();
+                services.AddScoped<IBrandService, BrandService>();
+                services.AddScoped(typeof(IRepository<>), typeof(AdoRepository<>));
+                services.AddScoped<IXmlService, XmlService>();
 
-            services.AddScoped<PhoneOverview>();
-                
+                services.AddScoped<PhoneOverview>();
+
             });
 
     }
