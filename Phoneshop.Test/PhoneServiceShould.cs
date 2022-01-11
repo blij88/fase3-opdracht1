@@ -76,7 +76,7 @@ namespace Phoneshop.Test
         }
 
         [Fact]
-        public void NotCreateAPhoneThatAlreadyExisting()
+        public void NotCreateAPhoneThatAlreadyExists()
         {
 
             localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
@@ -105,7 +105,29 @@ namespace Phoneshop.Test
         {
             Assert.Throws<System.ArgumentNullException>(() => phoneService.Delete(id));
         }
+        [Fact]
+        public void DeleteAPhone()
+        {
+            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
+
+            phoneService.Delete(1);
+
+            localMock.Verify(r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Once);
+        }
+        [Fact]
+        public void CreateAListOfPhones()
+        {
+            //setup
+            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns((Phone)null);
 
 
+            phoneService.Create(new List<Phone>() { 
+                new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 },
+                new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 }});
+
+            localMock.Verify(r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Exactly(2));
+
+
+        }
     }
 }
