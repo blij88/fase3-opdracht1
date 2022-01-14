@@ -20,24 +20,19 @@ namespace PhoneShop.Business.Logic
         {
             this.phoneRepository = phoneRepository;
             this.brandService = brandService;
-            phoneRepository.Mapper = PhoneMapper;
         }
 
         public Phone Get(int id)
         {
             if (id <= 0) return null;
-
-            using (var command = new SqlCommand("SELECT * FROM phones WHERE Id=" + id))
-            {
-                return phoneRepository.GetRecord(command);
-            }
+            return phoneRepository.Get(id);
+            
         }
 
         public IEnumerable<Phone> Get()
         {
-            using (var command = new SqlCommand("SELECT phones.*, Brands.Id as BrandsId, Brands.Name as BrandName FROM phones INNER JOIN Brands ON phones.BrandId = brands.id Order By Brands.Name"))
             {
-                return phoneRepository.GetRecords(command);
+                return phoneRepository.Get();
             }
         }
 
@@ -46,9 +41,7 @@ namespace PhoneShop.Business.Logic
             if (string.IsNullOrEmpty(query))
                 throw new ArgumentNullException(nameof(query));
 
-            var moviesFromDb = phoneRepository.GetRecords(new SqlCommand($"SELECT phones.*, Brands.Id as BrandsId, Brands.Name as BrandName FROM phones " +
-                $"INNER JOIN Brands ON phones.BrandId = brands.id " +
-                $"WHERE Type like '%{query}%' OR description like '%{query}%' OR Brands.Name like '%{query}%' Order By Brands.Name"));
+            var moviesFromDb = phoneRepository.Get();
 
             return moviesFromDb;
         }
@@ -56,23 +49,15 @@ namespace PhoneShop.Business.Logic
         public void Create(Phone phone)
         {
             var found = phoneRepository
-                .GetRecord(new SqlCommand($@"select TOP 1 * FROM phones P
-                                            INNER JOIN brands B on P.brandid = B.Id
-                                            WHERE P.[Type] = '{phone.Type}' AND B.Name = '{phone.Brand.Name}'"));
+                .Get(phone.Id);
 
             if (found != null)
                 throw new Exception($"Phone {phone.Brand.Name} - {phone.Type} already exists");
 
-            var brand = brandService.GetOrCreate(phone.Brand.Name);
+            brandService.GetOrCreate(phone.Brand.Name);
 
-            var command = new SqlCommand("INSERT INTO Phones (BrandId, Stock, Type, Description, Price) VALUES (@BrandId, @Stock, @Type, @Description, @Price)");
-            command.Parameters.AddWithValue("@BrandId", brand.Id);
-            command.Parameters.AddWithValue("@Description", phone.Description);
-            command.Parameters.AddWithValue("@Type", phone.Type);
-            command.Parameters.AddWithValue("@Price", phone.Price);
-            command.Parameters.AddWithValue("@Stock", phone.Stock);
 
-            phoneRepository.ExecuteNonQuery(command);
+            phoneRepository.Create(found);
         }
 
         public void Create(List<Phone> phones)
@@ -86,29 +71,9 @@ namespace PhoneShop.Business.Logic
             if (id <= 0)
                 throw new ArgumentNullException(nameof(id));
 
-            var command = new SqlCommand("DELETE FROM Phones WHERE Id=@id");
-            command.Parameters.AddWithValue("@id", id);
 
-            phoneRepository.ExecuteNonQuery(command);
+            phoneRepository.Delete(id);
         }
 
-        [ExcludeFromCodeCoverage]
-        public Phone PhoneMapper(SqlDataReader reader)
-        {
-            return new Phone()
-            {
-                Id = reader.GetInt("Id"),
-                BrandId = reader.GetInt("brandid"),
-                Description = reader.GetString("Description"),
-                Price = reader.GetDouble("price"),
-                Stock = reader.GetInt("stock"),
-                Type = reader.GetString("Type"),
-                Brand = new Brand
-                {
-                    Id = reader.GetInt("BrandsId"),
-                    Name = reader.GetString("BrandName")
-                }
-            };
-        }
     }
 }

@@ -4,139 +4,51 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq.Expressions;
 
 namespace PhoneShop.Business.Repositories
 {
 
     public class AdoRepository<T> : IRepository<T> where T : class
     {
-
-        private SqlConnection _connection;
-
-        public Func<SqlDataReader, T> Mapper { private get; set; }
-
-        public AdoRepository(IConfiguration configuration)
+        public void Create(T entity)
         {
-            _connection = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
+            throw new NotImplementedException();
         }
 
-        public void Status(bool IsError, string strErrMsg) { }
-
-        public void GetDataCount(int count) { }
-
-        public void ExecuteNonQuery(SqlCommand command)
+        public void createMultiple(IEnumerable<T> entities)
         {
-            command.Connection = _connection;
-            _connection.Open();
-            command.ExecuteNonQuery();
-            _connection.Close();
-            //_connection.Dispose();
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<T> GetRecords(SqlCommand command)
+        public void Delete(int id)
         {
-            var reader = (SqlDataReader)null;
-            var list = new List<T>();
-            try
-            {
-                command.Connection = _connection;
-                _connection.Open();
-                reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    list.Add(Mapper(reader));
-                }
-
-                reader.NextResult();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        GetDataCount(Convert.ToInt32(reader["Count"].ToString()));
-                    }
-                }
-                Status(false, "");
-            }
-            catch (Exception ex)
-            {
-                Status(true, ex.Message);
-            }
-            finally
-            {
-                reader.Close();
-                _connection.Close();
-                //_connection.Dispose();
-            }
-
-            return list;
+            throw new NotImplementedException();
         }
 
-        public T GetRecord(SqlCommand command)
+        public T Get(int id)
         {
-            var reader = (SqlDataReader)null;
-            T record = null;
-
-            try
-            {
-                command.Connection = _connection;
-                _connection.Open();
-
-                reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    record = Mapper(reader);
-                    Status(false, "");
-                    break;
-                }
-            }
-            catch (Exception ex)
-            {
-                Status(true, ex.Message);
-            }
-            finally
-            {
-                reader.Close();
-                _connection.Close();
-                //_connection.Dispose();
-            }
-            return record;
+            throw new NotImplementedException();
         }
 
-        public IEnumerable<T> ExecuteStoredProc(SqlCommand command, string CountColName = "TotalCount")
+        public IEnumerable<T> Get()
         {
-            var reader = (SqlDataReader)null;
-            var list = new List<T>();
+            throw new NotImplementedException();
+        }
 
-            try
-            {
-                command.Connection = _connection;
-                command.CommandType = CommandType.StoredProcedure;
-                _connection.Open();
-                reader = command.ExecuteReader();
+        public T Get(string name)
+        {
+            throw new NotImplementedException();
+        }
 
-                while (reader.Read())
-                {
-                    var record = Mapper(reader);
-                    if (record != null) list.Add(record);
-                }
+        public IEnumerable<T> SearchQuery(string query, Expression<Func<T, bool>> expression)
+        {
+            throw new NotImplementedException();
+        }
 
-                reader.NextResult();
-                if (reader.HasRows)
-                {
-                    while (reader.Read())
-                    {
-                        GetDataCount(Convert.ToInt32(reader[CountColName].ToString()));
-                    }
-                }
-
-            }
-            finally
-            {
-                reader.Close();
-                _connection.Close();
-                //_connection.Dispose();
-            }
-            return list;
+        public void Update(T entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }

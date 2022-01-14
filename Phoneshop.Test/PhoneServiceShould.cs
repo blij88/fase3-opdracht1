@@ -14,36 +14,39 @@ namespace Phoneshop.Test
     {
         private Mock<IBrandService> localBrand;
         private PhoneService phoneService;
+        private Phone samplePhone;
         private Mock<IRepository<Phone>> localMock;
 
         public PhoneServiceShould()
         {
             var repoMock = new Mock<IRepository<Phone>>();
-            repoMock.Setup(r => r.GetRecords(It.IsAny<SqlCommand>())).Returns(new List<Phone>() { new Phone() { Id = 1 } });
+            repoMock.Setup(r => r.Get()).Returns(new List<Phone>() { new Phone() { Id = 1 } });
             localMock = repoMock;
+
             var brand = new Mock<IBrandService>();
             brand.Setup(b=> b.GetOrCreate(It.IsAny<string>())).Returns(new Brand() { Id = 1 });
             localBrand = brand;
 
             phoneService = new PhoneService(repoMock.Object, brand.Object);
 
+            samplePhone = new Phone() {Id = 1, Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 };
         }
 
         [Fact]
         public void GetSinglePhone()
         {
 
-            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
-            var phone = phoneService.Get(1);
-            Assert.Equal(1 , phone.Id);
+            localMock.Setup(r => r.Get(It.IsAny<int>())).Returns(samplePhone);
+            var phone = phoneService.Get(samplePhone.Id);
+            Assert.Equal(samplePhone.Id , phone.Id);
         }
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        public void GetAboveOrEqualtoZero(int id)
+        public void NotGetWithIdBelowOrEqualtoZero(int id)
         {
 
-            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
+            localMock.Setup(r => r.Get(It.IsAny<int>())).Returns(samplePhone);
 
 
             var phone = phoneService.Get(id);
@@ -79,24 +82,24 @@ namespace Phoneshop.Test
         public void NotCreateAPhoneThatAlreadyExists()
         {
 
-            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
+            localMock.Setup(r => r.Get(It.IsAny<int>())).Returns(samplePhone);
 
 
             Assert.ThrowsAny<System.Exception>(() =>
-            phoneService.Create(new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 }));
+            phoneService.Create(samplePhone));
         }
         [Fact]
         public void CreateANewPhone()
         {
 
-            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns((Phone)null);
+            localMock.Setup(r => r.Get(It.IsAny<int>())).Returns((Phone)null);
 
 
-            phoneService.Create(new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 });
+            phoneService.Create(samplePhone);
 
 
             localBrand.Verify(b => b.GetOrCreate(It.IsAny<string>()), Times.Once);
-            localMock.Verify( r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Once);
+            localMock.Verify( r => r.Create(It.IsAny<Phone>()), Times.Once);
         }
 
         [Theory]
@@ -109,24 +112,24 @@ namespace Phoneshop.Test
         [Fact]
         public void DeleteAPhone()
         {
-            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(new Phone() { Id = 1 });
+            localMock.Setup(r => r.Get(It.IsAny<int>())).Returns(samplePhone);
 
-            phoneService.Delete(1);
+            phoneService.Delete(samplePhone.Id);
 
-            localMock.Verify(r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Once);
+            localMock.Verify(r => r.Delete(It.IsAny<int>()), Times.Once);
         }
         [Fact]
         public void CreateAListOfPhones()
         {
             //setup
-            localMock.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns((Phone)null);
+            localMock.Setup(r => r.Get(It.IsAny<int>())).Returns((Phone)null);
 
 
-            phoneService.Create(new List<Phone>() { 
-                new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 },
-                new Phone() { Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 }});
+            phoneService.Create(new List<Phone>() {
+                samplePhone,
+                samplePhone });
 
-            localMock.Verify(r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Exactly(2));
+            localMock.Verify(r => r.Create(It.IsAny<Phone>()), Times.Exactly(2));
 
 
         }

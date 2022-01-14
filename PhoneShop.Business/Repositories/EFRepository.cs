@@ -1,42 +1,66 @@
-﻿using PhoneShop.Business.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PhoneShop.Business.Data;
+using PhoneShop.Business.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace PhoneShop.Business.Repositories
 {
-    internal class EFRepository<T> : IRepository<T> where T : class
+    public class EFRepository<T> : IRepository<T> where T : class
     {
-        public Func<SqlDataReader, T> Mapper { set => throw new NotImplementedException(); }
+        private readonly DatabaseContext db;
 
-        public void ExecuteNonQuery(SqlCommand command)
+        public EFRepository(DatabaseContext db)
         {
-            throw new NotImplementedException();
+            this.db = db;
+        }
+        public void Create(T entity)
+        {
+            db.Add<T>(entity);
+            db.SaveChanges();
         }
 
-        public IEnumerable<T> ExecuteStoredProc(SqlCommand command, string CountColName = "TotalCount")
+        public void createMultiple(IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+            db.Set<T>().AddRange(entities);
+            db.SaveChanges();
         }
 
-        public void GetDataCount(int count)
+        public void Delete(int id)
         {
-            throw new NotImplementedException();
+            var entity = Get(id);
+            db.Remove<T>(entity);
+            db.SaveChanges();
         }
 
-        public T GetRecord(SqlCommand command)
+        public T Get(int id)
         {
-            throw new NotImplementedException();
+            return db.Set<T>().Find(id);
         }
 
-        public IEnumerable<T> GetRecords(SqlCommand command)
+        public IEnumerable<T> Get()
         {
-            throw new NotImplementedException();
+            return db.Set<T>().ToList();
         }
 
-        public void Status(bool IsError, string strErrMsg)
+        public T Get(string name)
         {
-            throw new NotImplementedException();
+            return db.Set<T>().Find(name);
+        }
+
+        public IEnumerable<T> SearchQuery(string query, Expression<Func<T, bool>> expression)
+        {
+            return db.Set<T>().Where(expression).ToList();
+        }
+
+        public void Update(T entity)
+        {
+
+            db.Entry(entity).State = EntityState.Modified;
+            db.SaveChanges();
         }
     }
 }

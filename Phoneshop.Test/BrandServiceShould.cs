@@ -12,13 +12,13 @@ namespace Phoneshop.Test
     {
         private readonly BrandService brandService;
         private readonly string testName;
-        private readonly Brand _testBrand;
+        private readonly Brand testBrand;
         private readonly Mock<IRepository<Brand>> _mockRepo;
 
         public BrandServiceShould()
         {
             testName = "Motorola";
-            _testBrand = new Brand() { Id = 1, Name = testName };
+            testBrand = new Brand() { Id = 1, Name = testName };
             var mockRepo = new Mock<IRepository<Brand>>();
             _mockRepo = mockRepo;
 
@@ -28,10 +28,10 @@ namespace Phoneshop.Test
         [Fact]
         public void GetExistingBrand()
         {
-            _mockRepo.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(_testBrand);
+            _mockRepo.Setup(r => r.Get(It.IsAny<string>())).Returns(testBrand);
             var brand = brandService.GetOrCreate(testName);
 
-            _mockRepo.Verify(r => r.GetRecord(It.IsAny<SqlCommand>()), Times.Once);
+            _mockRepo.Verify(r => r.Get(testBrand.Name), Times.Once);
             Assert.Equal(testName, brand.Name);
         }
         [Theory]
@@ -44,23 +44,23 @@ namespace Phoneshop.Test
         [Fact]
         public void CreateIfBrandDoesNotExist()
         {
-            
-            Brand testBrand = null;
-            _mockRepo.Setup(r => r.GetRecord(It.IsAny<SqlCommand>())).Returns(() =>testBrand).Callback(() => testBrand = _testBrand) ;
+            _mockRepo.SetupSequence(r => r.Get(It.IsAny<string>()))
+                .Returns((Brand)null)
+                .Returns(testBrand);
 
 
             var brand = brandService.GetOrCreate(testName);
 
-            _mockRepo.Verify(r => r.GetRecord(It.IsAny<SqlCommand>()), Times.Exactly(2));
-            _mockRepo.Verify(r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Once);
+            _mockRepo.Verify(r => r.Get(It.IsAny<string>()), Times.Exactly(2));
+            _mockRepo.Verify(r => r.Create(It.IsAny<Brand>()), Times.Once);
             Assert.Equal(testName, brand.Name);
         }
 
         [Fact]
         public void CreateNewBrand()
         {
-            brandService.Create(_testBrand);
-            _mockRepo.Verify(r => r.ExecuteNonQuery(It.IsAny<SqlCommand>()), Times.Once);
+            brandService.Create(testBrand);
+            _mockRepo.Verify(r => r.Create(It.IsAny<Brand>()), Times.Once);
         }
 
     }

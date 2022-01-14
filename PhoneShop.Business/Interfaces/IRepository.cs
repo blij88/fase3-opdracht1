@@ -1,20 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq.Expressions;
 
 namespace PhoneShop.Business.Interfaces
 {
 
     public interface IRepository<T> where T : class
     {
-        Func<SqlDataReader, T> Mapper { set; }
-
-        void Status(bool IsError, string strErrMsg);
-
-        void GetDataCount(int count);
-        void ExecuteNonQuery(SqlCommand command);
-        IEnumerable<T> GetRecords(SqlCommand command);
-        T GetRecord(SqlCommand command);
-        IEnumerable<T> ExecuteStoredProc(SqlCommand command, string CountColName = "TotalCount");
+        T Get(int id);
+        T Get(string name);
+        IEnumerable<T> Get();
+        IEnumerable<T> SearchQuery(string query, Expression<Func<T, bool>> expression);
+        void Create (T entity);
+        void createMultiple(IEnumerable<T> entities);
+        void Update (T entity);
+        void Delete (int id);
+        
+        
     }
 }

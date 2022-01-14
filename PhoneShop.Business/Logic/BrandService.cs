@@ -16,7 +16,6 @@ namespace PhoneShop.Business.Logic
             public BrandService(IRepository<Brand> brandRepository)
             {
                 this.brandRepository = brandRepository;
-                this.brandRepository.Mapper = PhoneMapper;
             }
 
             public Brand GetOrCreate(string name)
@@ -24,13 +23,12 @@ namespace PhoneShop.Business.Logic
                 if (string.IsNullOrEmpty(name))
                     throw new ArgumentNullException(nameof(name));
 
-                var command = new SqlCommand("SELECT * FROM brands WHERE name = '" + name + "'");
 
-                var result = brandRepository.GetRecord(command);
+                var result = brandRepository.Get(name);
 
                 if (result == null)
                 {
-                    Create(new Brand { Name = name });
+                    Create(new Brand {  });
                     return GetOrCreate(name);
                 }
 
@@ -39,19 +37,7 @@ namespace PhoneShop.Business.Logic
 
             public void Create(Brand brand)
             {
-                var command = new SqlCommand("INSERT INTO Brands (Name) VALUES (@BrandName)");
-                command.Parameters.AddWithValue("BrandName", brand.Name);
-                brandRepository.ExecuteNonQuery(command);
-            }
-
-            [ExcludeFromCodeCoverage]
-            public static Brand PhoneMapper(SqlDataReader reader)
-            {
-                return new()
-                {
-                    Id = reader.GetInt("Id"),
-                    Name = reader.GetString("Name"),
-                };
+                brandRepository.Create(brand);
             }
         }
     }
