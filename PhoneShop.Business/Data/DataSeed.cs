@@ -14,6 +14,7 @@ namespace PhoneShop.Business.Data
                 new Phone { Id = 4, BrandId = 2, Price = 54, Stock = 12, Description = "testing", Type = "test4" },
                 new Phone { Id = 5, BrandId = 1, Price = 54, Stock = 12, Description = "testing", Type = "test5" }
                 );
+            modelBuilder.Entity<Phone>().Property(p => p.Price).HasConversion<decimal>();
             modelBuilder.Entity<Brand>().HasData(
                 new Brand { Id = 1, Name = "Motorola" },
                 new Brand { Id = 2, Name = "Xiaomi" }

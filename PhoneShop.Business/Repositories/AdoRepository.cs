@@ -31,17 +31,17 @@ namespace PhoneShop.Business.Repositories
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> Get()
+        public T Get(Expression<Func<T, bool>> expression)
         {
             throw new NotImplementedException();
         }
 
-        public T Get(string name)
+        public IEnumerable<T> GetQueryIncludes(Expression<Func<T, object>> include)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> SearchQuery(string query, Expression<Func<T, bool>> expression)
+        public IEnumerable<T> SearchQuery(Expression<Func<T, bool>> expression)
         {
             throw new NotImplementedException();
         }
@@ -51,4 +51,5 @@ namespace PhoneShop.Business.Repositories
             throw new NotImplementedException();
         }
     }
+
 }

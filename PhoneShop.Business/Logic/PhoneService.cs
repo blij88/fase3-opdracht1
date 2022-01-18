@@ -1,12 +1,8 @@
-﻿using PhoneShop.Business.Extensions;
-using PhoneShop.Business.Interfaces;
+﻿using PhoneShop.Business.Interfaces;
 using PhoneShop.Data.Entities;
 using PhoneShop.Data.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PhoneShop.Business.Logic
 {
@@ -26,13 +22,13 @@ namespace PhoneShop.Business.Logic
         {
             if (id <= 0) return null;
             return phoneRepository.Get(id);
-            
+
         }
 
         public IEnumerable<Phone> Get()
         {
             {
-                return phoneRepository.Get();
+                return phoneRepository.GetQueryIncludes(a => a.Brand);
             }
         }
 
@@ -41,7 +37,7 @@ namespace PhoneShop.Business.Logic
             if (string.IsNullOrEmpty(query))
                 throw new ArgumentNullException(nameof(query));
 
-            var moviesFromDb = phoneRepository.Get();
+            var moviesFromDb = phoneRepository.GetQueryIncludes(a => a.Brand);
 
             return moviesFromDb;
         }
@@ -57,7 +53,7 @@ namespace PhoneShop.Business.Logic
             brandService.GetOrCreate(phone.Brand.Name);
 
 
-            phoneRepository.Create(found);
+            phoneRepository.Create(phone);
         }
 
         public void Create(List<Phone> phones)

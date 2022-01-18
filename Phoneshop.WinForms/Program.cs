@@ -1,11 +1,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PhoneShop.Business.Data;
 using PhoneShop.Business.Interfaces;
 using PhoneShop.Business.Logic;
 using PhoneShop.Business.Repositories;
 using PhoneShop.Data.Interfaces;
 using System;
 using System.Windows.Forms;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Phoneshop.WinForms
 {
@@ -33,10 +36,12 @@ namespace Phoneshop.WinForms
             {
                 services.AddScoped<IPhoneService, PhoneService>();
                 services.AddScoped<IBrandService, BrandService>();
-                services.AddScoped(typeof(IRepository<>), typeof(AdoRepository<>));
+                services.AddScoped(typeof(IRepository<>), typeof(EFRepository<>));
                 services.AddScoped<IXmlService, XmlService>();
 
                 services.AddScoped<PhoneOverview>();
+
+                services.AddDbContext<DatabaseContext>(options => options.UseSqlServer(hostContext.Configuration.GetConnectionString("DefaultConnection")));
 
             });
 

@@ -41,17 +41,17 @@ namespace PhoneShop.Business.Repositories
             return db.Set<T>().Find(id);
         }
 
-        public IEnumerable<T> Get()
+        public IEnumerable<T> GetQueryIncludes(Expression<Func<T, object>> include)
         {
-            return db.Set<T>().ToList();
+            return db.Set<T>().Include(include).ToList();
         }
 
-        public T Get(string name)
+        public T Get(Expression<Func<T, bool>> expression)
         {
-            return db.Set<T>().Find(name);
+            return db.Set<T>().FirstOrDefault(expression);
         }
 
-        public IEnumerable<T> SearchQuery(string query, Expression<Func<T, bool>> expression)
+        public IEnumerable<T> SearchQuery(Expression<Func<T, bool>> expression)
         {
             return db.Set<T>().Where(expression).ToList();
         }

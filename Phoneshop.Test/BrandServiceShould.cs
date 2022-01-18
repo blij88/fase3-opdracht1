@@ -28,10 +28,10 @@ namespace Phoneshop.Test
         [Fact]
         public void GetExistingBrand()
         {
-            _mockRepo.Setup(r => r.Get(It.IsAny<string>())).Returns(testBrand);
+            _mockRepo.Setup(r => r.Get(It.IsNotNull<System.Linq.Expressions.Expression<Func<Brand,bool>>>())).Returns(testBrand);
             var brand = brandService.GetOrCreate(testName);
 
-            _mockRepo.Verify(r => r.Get(testBrand.Name), Times.Once);
+            _mockRepo.Verify(r => r.Get(It.IsNotNull< System.Linq.Expressions.Expression < Func<Brand, bool>>>()), Times.Once);
             Assert.Equal(testName, brand.Name);
         }
         [Theory]
@@ -44,14 +44,14 @@ namespace Phoneshop.Test
         [Fact]
         public void CreateIfBrandDoesNotExist()
         {
-            _mockRepo.SetupSequence(r => r.Get(It.IsAny<string>()))
+            _mockRepo.SetupSequence(r => r.Get(It.IsNotNull<System.Linq.Expressions.Expression<Func<Brand, bool>>>()))
                 .Returns((Brand)null)
                 .Returns(testBrand);
 
 
             var brand = brandService.GetOrCreate(testName);
 
-            _mockRepo.Verify(r => r.Get(It.IsAny<string>()), Times.Exactly(2));
+            _mockRepo.Verify(r => r.Get(It.IsNotNull<System.Linq.Expressions.Expression<Func<Brand, bool>>>()), Times.Exactly(2));
             _mockRepo.Verify(r => r.Create(It.IsAny<Brand>()), Times.Once);
             Assert.Equal(testName, brand.Name);
         }

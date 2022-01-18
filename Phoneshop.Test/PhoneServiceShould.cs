@@ -4,7 +4,6 @@ using PhoneShop.Business.Logic;
 using PhoneShop.Data.Entities;
 using PhoneShop.Data.Interfaces;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using Xunit;
 
 namespace Phoneshop.Test
@@ -20,16 +19,16 @@ namespace Phoneshop.Test
         public PhoneServiceShould()
         {
             var repoMock = new Mock<IRepository<Phone>>();
-            repoMock.Setup(r => r.Get()).Returns(new List<Phone>() { new Phone() { Id = 1 } });
+            repoMock.Setup(r => r.GetQueryIncludes(It.IsNotNull<System.Linq.Expressions.Expression<System.Func<Phone, object>>>())).Returns(new List<Phone>() { new Phone() { Id = 1 } });
             localMock = repoMock;
 
             var brand = new Mock<IBrandService>();
-            brand.Setup(b=> b.GetOrCreate(It.IsAny<string>())).Returns(new Brand() { Id = 1 });
+            brand.Setup(b => b.GetOrCreate(It.IsAny<string>())).Returns(new Brand() { Id = 1 });
             localBrand = brand;
 
             phoneService = new PhoneService(repoMock.Object, brand.Object);
 
-            samplePhone = new Phone() {Id = 1, Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 };
+            samplePhone = new Phone() { Id = 1, Description = "ghagdjwhj", Type = "vgjfaje", Price = 78, Stock = 9, Brand = new Brand() { Name = "hjfehejkf", Id = 1 }, BrandId = 1 };
         }
 
         [Fact]
@@ -38,7 +37,7 @@ namespace Phoneshop.Test
 
             localMock.Setup(r => r.Get(It.IsAny<int>())).Returns(samplePhone);
             var phone = phoneService.Get(samplePhone.Id);
-            Assert.Equal(samplePhone.Id , phone.Id);
+            Assert.Equal(samplePhone.Id, phone.Id);
         }
         [Theory]
         [InlineData(0)]
@@ -50,8 +49,8 @@ namespace Phoneshop.Test
 
 
             var phone = phoneService.Get(id);
-            
-            
+
+
             Assert.Null(phone);
         }
 
@@ -75,7 +74,7 @@ namespace Phoneshop.Test
         [Fact]
         public void SearchNullThrowsException()
         {
-           Assert.Throws<System.ArgumentNullException>(()=> phoneService.Search(null));
+            Assert.Throws<System.ArgumentNullException>(() => phoneService.Search(null));
         }
 
         [Fact]
@@ -99,7 +98,7 @@ namespace Phoneshop.Test
 
 
             localBrand.Verify(b => b.GetOrCreate(It.IsAny<string>()), Times.Once);
-            localMock.Verify( r => r.Create(It.IsAny<Phone>()), Times.Once);
+            localMock.Verify(r => r.Create(It.IsAny<Phone>()), Times.Once);
         }
 
         [Theory]
